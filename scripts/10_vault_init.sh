@@ -29,4 +29,7 @@ kubectl exec -n vault -ti vault-2 -- vault operator unseal $(cat vault-init.json
 kubectl exec -n vault -ti vault-2 -- vault operator unseal $(cat vault-init.json | jq -r '.unseal_keys_b64[2]')
 sleep 3
 kubectl exec -n vault -ti vault-2 -- vault status
-
+echo
+export VAULT_TOKEN=$(cat vault-init.json | jq -r '.root_token')
+kubectl exec -n vault -ti vault-0 -- sh -c "VAULT_TOKEN=$VAULT_TOKEN vault operator raft list-peers"
+echo

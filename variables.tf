@@ -58,3 +58,13 @@ variable "gke_cluster_name" {
   type    = string
   default = "gke-autopilot"
 }
+
+variable "create_k8s" {
+  type    = bool
+  default = true
+}
+
+variable "vault_client_cidrs" {
+  type    = list(string)
+  default = []
+}

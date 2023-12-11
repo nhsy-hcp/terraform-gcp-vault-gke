@@ -12,3 +12,5 @@ spec:
     type: HTTPS
     requestPath: /v1/sys/health
     port: 8200
+  securityPolicy:
+    name: ${cloud_armor_security_policy_name}

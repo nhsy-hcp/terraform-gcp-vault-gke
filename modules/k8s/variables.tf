@@ -78,3 +78,12 @@ variable "managed_cert_name" {
   default = "vault-managed-cert"
 
 }
+
+variable "cloud_armour_enabled" {
+  type    = bool
+  default = true
+}
+
+variable "cloud_armour_whitelist_cidrs" {
+  type = list(string)
+}

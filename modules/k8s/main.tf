@@ -1,5 +1,6 @@
 locals {
-  lb_name = "lb-vault-${var.unique_id}"
+  cloud_armour_security_policy_name = "vault-policy-${var.unique_id}"
+  lb_name                           = "lb-vault-${var.unique_id}"
 }
 
 resource "tls_private_key" "default" {
@@ -73,8 +74,9 @@ resource "kubernetes_manifest" "vault_backend_config" {
   count = var.create ? 1 : 0
   manifest = yamldecode(templatefile("${path.module}/templates/vault_backend_config.yaml",
     {
-      name      = var.vault_backend_config
-      namespace = kubernetes_namespace_v1.default[0].metadata.0.name
+      cloud_armor_security_policy_name = local.cloud_armour_security_policy_name
+      name                             = var.vault_backend_config
+      namespace                        = kubernetes_namespace_v1.default[0].metadata.0.name
   }))
 }
 
@@ -113,4 +115,33 @@ resource "helm_release" "vault" {
     kubernetes_manifest.vault_backend_config,
     kubernetes_manifest.vault_managed_cert
   ]
+}
+
+resource "google_compute_security_policy" "whitelist" {
+  count = var.create && var.cloud_armour_enabled ? 1 : 0
+  name  = local.cloud_armour_security_policy_name
+
+  rule {
+    action   = "allow"
+    priority = "1000"
+    match {
+      versioned_expr = "SRC_IPS_V1"
+      config {
+        src_ip_ranges = var.cloud_armour_whitelist_cidrs
+      }
+    }
+    description = "Allow access to whitelisted IPs"
+  }
+
+  rule {
+    action   = "deny(403)"
+    priority = "2147483647"
+    match {
+      versioned_expr = "SRC_IPS_V1"
+      config {
+        src_ip_ranges = ["*"]
+      }
+    }
+    description = "default deny rule"
+  }
 }
