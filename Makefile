@@ -11,7 +11,7 @@ init: fmt
 apply: init
 	@terraform validate
 	@terraform apply -auto-approve
-	@./scripts/00-gke.sh
+	@./scripts/00_gke.sh
 
 benchmark: init
 	@terraform validate
@@ -29,7 +29,7 @@ destroy: init vault-uninstall
 	@terraform destroy -auto-approve
 
 vault-init:
-	@./scripts/10-vault-init.sh
+	@./scripts/10_vault_init.sh
 
 vault-reinstall: vault-uninstall apply
 

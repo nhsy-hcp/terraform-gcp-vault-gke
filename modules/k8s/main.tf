@@ -71,7 +71,7 @@ resource "google_compute_global_address" "default" {
 
 resource "kubernetes_manifest" "vault_backend_config" {
   count = var.create ? 1 : 0
-  manifest = yamldecode(templatefile("${path.module}/templates/vault-backend-config.yaml",
+  manifest = yamldecode(templatefile("${path.module}/templates/vault_backend_config.yaml",
     {
       name      = var.vault_backend_config
       namespace = kubernetes_namespace_v1.default[0].metadata.0.name
@@ -80,7 +80,7 @@ resource "kubernetes_manifest" "vault_backend_config" {
 
 resource "kubernetes_manifest" "vault_managed_cert" {
   count = var.create ? 1 : 0
-  manifest = yamldecode(templatefile("${path.module}/templates/vault-cert.yaml",
+  manifest = yamldecode(templatefile("${path.module}/templates/vault_cert.yaml",
     {
       name      = var.managed_cert_name
       namespace = kubernetes_namespace_v1.default[0].metadata.0.name
@@ -98,7 +98,7 @@ resource "helm_release" "vault" {
 
   namespace = kubernetes_namespace_v1.default[0].metadata.0.name
   values = [
-    "${templatefile("${path.module}/templates/vault-values.yaml",
+    "${templatefile("${path.module}/templates/vault_values.yaml",
       {
         lb_ip_address_name = google_compute_global_address.default[0].name
         managed_cert_name  = var.managed_cert_name
