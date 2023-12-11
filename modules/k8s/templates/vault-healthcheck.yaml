@@ -1,0 +1,11 @@
+apiVersion: cloud.google.com/v1
+kind: BackendConfig
+metadata:
+  name: ${name}
+  namespace: ${namespace}
+spec:
+  healthCheck:
+    timeoutSec: 5
+    type: HTTP
+    requestPath: /v1/sys/health
+    port: 8200

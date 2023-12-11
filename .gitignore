@@ -20,3 +20,4 @@
 # Terrafaor local tfvars
 terraform.tfvars
 
+/vault-init.json
