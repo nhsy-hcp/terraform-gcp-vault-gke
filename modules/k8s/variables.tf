@@ -64,11 +64,17 @@ variable "unique_id" {
   type = string
 }
 
-variable "health_check_name" {
+variable "vault_backend_config" {
   type    = string
-  default = "hc-vault"
+  default = "vault-backend-config"
 }
 
 variable "fqdn" {
   type = string
+}
+
+variable "managed_cert_name" {
+  type    = string
+  default = "vault-managed-cert"
+
 }

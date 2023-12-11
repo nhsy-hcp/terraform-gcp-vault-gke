@@ -69,12 +69,22 @@ resource "google_compute_global_address" "default" {
   name  = local.lb_name
 }
 
-resource "kubernetes_manifest" "hc_vault" {
+resource "kubernetes_manifest" "vault_backend_config" {
   count = var.create ? 1 : 0
-  manifest = yamldecode(templatefile("${path.module}/templates/vault-healthcheck.yaml",
+  manifest = yamldecode(templatefile("${path.module}/templates/vault-backend-config.yaml",
     {
-      name      = var.health_check_name
+      name      = var.vault_backend_config
       namespace = kubernetes_namespace_v1.default[0].metadata.0.name
+  }))
+}
+
+resource "kubernetes_manifest" "vault_managed_cert" {
+  count = var.create ? 1 : 0
+  manifest = yamldecode(templatefile("${path.module}/templates/vault-cert.yaml",
+    {
+      name      = var.managed_cert_name
+      namespace = kubernetes_namespace_v1.default[0].metadata.0.name
+      fqdn      = var.fqdn
   }))
 }
 
@@ -91,7 +101,8 @@ resource "helm_release" "vault" {
     "${templatefile("${path.module}/templates/vault-values.yaml",
       {
         lb_ip_address_name = google_compute_global_address.default[0].name
-        vault_healthcheck  = var.health_check_name
+        managed_cert_name  = var.managed_cert_name
+        vault_healthcheck  = var.vault_backend_config
         fqdn               = var.fqdn
     })}"
   ]
@@ -99,6 +110,7 @@ resource "helm_release" "vault" {
   wait = true
 
   depends_on = [
-    kubernetes_manifest.hc_vault,
+    kubernetes_manifest.vault_backend_config,
+    kubernetes_manifest.vault_managed_cert
   ]
 }

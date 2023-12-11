@@ -1,3 +1,5 @@
+#!/bin/bash
+
 GKE_CLUSTER=$(terraform output -raw gke_cluster_name)
 REGION=$(terraform output -raw region)
 

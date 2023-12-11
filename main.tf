@@ -14,6 +14,5 @@ data "google_client_config" "current" {}
 locals {
   management_ip = "${chomp(data.http.management_ip.response_body)}/32"
   vault_fqdn    = "vault.${var.project}.${var.domain_name_suffix}"
-  vault_url     = "http://vault.${var.project}.${var.domain_name_suffix}"
+  vault_url     = "https://vault.${var.project}.${var.domain_name_suffix}"
 }
-
