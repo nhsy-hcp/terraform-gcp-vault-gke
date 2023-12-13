@@ -7,23 +7,12 @@ variable "region" {
   description = "The region to deploy to"
   default     = "europe-west1"
   type        = string
-
-  validation {
-    condition     = can(regex("(europe-west1|europe-west2|us-central1)", var.region))
-    error_message = "The region must be one of: europe-west1, europe-west2, us-central1."
-  }
 }
 
 variable "subnet_cidr" {
   type    = string
   default = "10.64.0.0/16"
 }
-
-variable "proxy_subnet_cidr" {
-  type    = string
-  default = "10.65.0.0/16"
-}
-
 
 variable "google_apis" {
   type = set(string)
@@ -39,17 +28,13 @@ variable "domain_name_suffix" {
   default = "gcp.sbx.hashicorpdemo.com"
 }
 
-variable "mig_target_size" {
-  type    = number
-  default = 3
-}
 
-variable "vault_license" {
+variable "vault_chart_version" {
   type    = string
-  default = ""
+  default = "0.27.0"
 }
 
-variable "vault_version" {
+variable "vault_version_tag" {
   type    = string
   default = "1.15.4"
 }

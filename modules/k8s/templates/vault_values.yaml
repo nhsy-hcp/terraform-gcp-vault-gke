@@ -6,6 +6,9 @@ injector:
   enabled: false
 
 server:
+  image:
+    repository: "hashicorp/vault"
+    tag: "${vault_version_tag}"
   ha:
     enabled: true
     replicas: 3
@@ -43,7 +46,7 @@ server:
 
     readinessProbe:
       enabled: true
-      path: "/v1/sys/health?standbyok=true"
+      path: "/v1/sys/health?standbyok=true&sealedcode=204&uninitcode=204"
     livenessProbe:
       enabled: true
       path: "/v1/sys/health?standbyok=true"
@@ -52,7 +55,7 @@ server:
   service:
     annotations:
       cloud.google.com/app-protocols: '{"https":"HTTPS"}'
-      cloud.google.com/backend-config: '{"default": "${vault_healthcheck}"}'
+      cloud.google.com/backend-config: '{"default": "${vault_backend_config}"}'
 
   ingress:
     enabled: true
@@ -76,6 +79,3 @@ server:
   extraEnvironmentVars:
     VAULT_CAPATH: /vault/userconfig/tls-ca/ca.crt
     VAULT_SKIP_VERIFY: true
-
-ui:
-  enabled: false

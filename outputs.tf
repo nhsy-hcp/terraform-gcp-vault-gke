@@ -6,7 +6,7 @@ output "region" {
 }
 
 output "gke_cluster_name" {
-  value = var.gke_cluster_name
+  value = local.gke_cluster_name
 }
 
 output "vault_fqdn" {

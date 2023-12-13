@@ -12,7 +12,8 @@ data "http" "management_ip" {
 data "google_client_config" "current" {}
 
 locals {
-  management_ip = "${chomp(data.http.management_ip.response_body)}/32"
-  vault_fqdn    = "vault.${var.project}.${var.domain_name_suffix}"
-  vault_url     = "https://vault.${var.project}.${var.domain_name_suffix}"
+  gke_cluster_name = format("%s-%s", var.gke_cluster_name, module.common.unique_id)
+  management_ip    = "${chomp(data.http.management_ip.response_body)}/32"
+  vault_fqdn       = "vault.${var.project}.${var.domain_name_suffix}"
+  vault_url        = "https://vault.${var.project}.${var.domain_name_suffix}"
 }

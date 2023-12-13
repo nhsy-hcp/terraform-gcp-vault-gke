@@ -1,6 +1,6 @@
-.PHONY: all init apply plan output destroy fmt clean benchmark
+.PHONY: all init tf k8s plan output destroy fmt clean benchmark
 
-all: apply
+all: tf k8s
 
 fmt:
 	@terraform fmt -recursive
@@ -8,9 +8,11 @@ fmt:
 init: fmt
 	@terraform init
 
-apply: init
+tf: init
 	@terraform validate
-	@#terraform apply -auto-approve -var create_k8s=false
+	@terraform apply -auto-approve -var create_k8s=false
+
+k8s: init
 	@terraform apply -auto-approve
 	@./scripts/00_gke.sh
 
@@ -25,27 +27,28 @@ plan: init
 output:
 	@terraform output
 
-destroy: init
-	@terraform destroy -auto-approve -var create_k8s=false -target module.k8s
+destroy: init vault-uninstall
 	@terraform destroy -auto-approve -var create_k8s=false -target google_container_cluster.gke_autopilot
 	@terraform destroy -auto-approve -var create_k8s=false
 
 vault-init:
 	@./scripts/10_vault_init.sh
 
-vault-reinstall: vault-uninstall apply
+vault-reinstall: vault-uninstall k8s
 
 vault-purge:
 	-@helm uninstall vault -n vault
 	-@kubectl delete pvc -n vault --all
-#	-@kubectl delete ns vault
 
 vault-uninstall:
-	@terraform destroy -auto-approve -target 'module.k8s'
+	@terraform destroy -auto-approve -var create_k8s=false -target module.k8s.helm_release.vault[0]
+	@terraform destroy -auto-approve -var create_k8s=false -target module.k8s
 
 vault-curl:
-	@while true;do curl -sI $(shell terraform output -raw vault_url); sleep 3; done
+	@while true;do curl -svI $(shell terraform output -raw vault_url); sleep 5; done
 
 clean:
 	-@rm -f terraform.tfstate*
+	-@rm -f .terraform.lock.hcl
 	-@rm -rf .terraform
+	-@rm -rf vault-init.json

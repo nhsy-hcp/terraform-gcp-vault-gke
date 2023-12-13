@@ -96,16 +96,17 @@ resource "helm_release" "vault" {
   name       = "vault"
   repository = "helm.releases.hashicorp.com"
   chart      = "hashicorp/vault"
-  version    = "0.27.0"
+  version    = var.vault_chart_version
 
   namespace = kubernetes_namespace_v1.default[0].metadata.0.name
   values = [
     "${templatefile("${path.module}/templates/vault_values.yaml",
       {
-        lb_ip_address_name = google_compute_global_address.default[0].name
-        managed_cert_name  = var.managed_cert_name
-        vault_healthcheck  = var.vault_backend_config
-        fqdn               = var.fqdn
+        lb_ip_address_name   = google_compute_global_address.default[0].name
+        managed_cert_name    = var.managed_cert_name
+        vault_backend_config = var.vault_backend_config
+        vault_version_tag    = var.vault_version_tag
+        fqdn                 = var.fqdn
     })}"
   ]
 
@@ -134,6 +135,27 @@ resource "google_compute_security_policy" "whitelist" {
   }
 
   rule {
+    action   = "throttle"
+    priority = "2000"
+    match {
+      versioned_expr = "SRC_IPS_V1"
+      config {
+        src_ip_ranges = ["*"]
+      }
+    }
+    rate_limit_options {
+      conform_action = "allow"
+      exceed_action  = "deny(429)"
+      enforce_on_key = "IP"
+      rate_limit_threshold {
+        count        = 10
+        interval_sec = "60"
+      }
+    }
+    description = "Rate limit all other connections"
+  }
+
+  rule {
     action   = "deny(403)"
     priority = "2147483647"
     match {
@@ -143,5 +165,9 @@ resource "google_compute_security_policy" "whitelist" {
       }
     }
     description = "default deny rule"
+  }
+
+  timeouts {
+    delete = "30m"
   }
 }

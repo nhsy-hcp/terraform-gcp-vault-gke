@@ -1,9 +1,11 @@
 resource "google_container_cluster" "gke_autopilot" {
-  name     = var.gke_cluster_name
+  name     = local.gke_cluster_name
   location = var.region
 
-  enable_autopilot = true
-  networking_mode  = "VPC_NATIVE"
+  enable_autopilot    = true
+  networking_mode     = "VPC_NATIVE"
+  deletion_protection = false
+
   private_cluster_config {
     enable_private_nodes   = true
     master_ipv4_cidr_block = "172.16.0.32/28"
@@ -19,4 +21,8 @@ resource "google_container_cluster" "gke_autopilot" {
   subnetwork = module.network.subnets_names["${var.region}/${local.gke_subnet_name}"]
 
   depends_on = [module.network]
+
+  timeouts {
+    delete = "30m"
+  }
 }

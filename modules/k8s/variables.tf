@@ -55,11 +55,6 @@ variable "vault_license" {
   default = null
 }
 
-variable "vault_version" {
-  type    = string
-  default = "1.15.4"
-}
-
 variable "unique_id" {
   type = string
 }
@@ -86,4 +81,15 @@ variable "cloud_armour_enabled" {
 
 variable "cloud_armour_whitelist_cidrs" {
   type = list(string)
+}
+
+
+variable "vault_chart_version" {
+  type    = string
+  default = null
+}
+
+variable "vault_version_tag" {
+  type    = string
+  default = null
 }
