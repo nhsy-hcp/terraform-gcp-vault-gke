@@ -50,11 +50,6 @@ variable "organization" {
   default = "ACME"
 }
 
-variable "vault_license" {
-  type    = string
-  default = null
-}
-
 variable "unique_id" {
   type = string
 }
@@ -83,13 +78,29 @@ variable "cloud_armour_whitelist_cidrs" {
   type = list(string)
 }
 
-
 variable "vault_chart_version" {
-  type    = string
-  default = null
+  type = string
 }
 
 variable "vault_version_tag" {
+  type = string
+}
+
+variable "vault_repository" {
+  type = string
+}
+
+variable "vault_license_secret_name" {
+  type    = string
+  default = "vault-enterprise"
+}
+
+variable "vault_license_secret_key" {
+  type    = string
+  default = "license"
+}
+
+variable "vault_license" {
   type    = string
   default = null
 }

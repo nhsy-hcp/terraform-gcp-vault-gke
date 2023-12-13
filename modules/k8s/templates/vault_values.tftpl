@@ -7,8 +7,15 @@ injector:
 
 server:
   image:
-    repository: "hashicorp/vault"
+    repository: "${vault_repository}"
     tag: "${vault_version_tag}"
+
+%{if vault_license_secret_name != "" }
+  enterpriseLicense:
+    secretName: "${vault_license_secret_name}"
+    secretKey: "${vault_license_secret_key}"
+%{ endif }
+
   ha:
     enabled: true
     replicas: 3
@@ -54,8 +61,9 @@ server:
 
   service:
     annotations:
-      cloud.google.com/app-protocols: '{"https":"HTTPS"}'
+      cloud.google.com/app-protocols: '{"https": "HTTPS"}'
       cloud.google.com/backend-config: '{"default": "${vault_backend_config}"}'
+      cloud.google.com/neg: '{"ingress": true}'
 
   ingress:
     enabled: true

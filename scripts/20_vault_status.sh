@@ -9,9 +9,15 @@ sleep 3
 kubectl exec -n vault -ti vault-0 -- vault status
 kubectl exec -n vault -ti vault-1 -- vault status
 kubectl exec -n vault -ti vault-2 -- vault status
-kubectl exec -n vault -ti vault-0 -- sh -c "VAULT_TOKEN=$VAULT_TOKEN vault operator raft list-peers"
 echo
-curl -skv $VAULT_ADDR/v1/sys/health
+kubectl exec -n vault -ti vault-0 -- sh -c "wget -qO- --no-check-certificate https://127.0.0.1:8200/v1/sys/health?perfstandbyok=true\&perfstandbyok=true"
+kubectl exec -n vault -ti vault-1 -- sh -c "wget -qO- --no-check-certificate https://127.0.0.1:8200/v1/sys/health?perfstandbyok=true\&perfstandbyok=true"
+kubectl exec -n vault -ti vault-2 -- sh -c "wget -qO- --no-check-certificate https://127.0.0.1:8200/v1/sys/health?perfstandbyok=true\&perfstandbyok=true"
+sleep 3
+echo
+curl -skv "$VAULT_ADDR/v1/sys/health?standbyok=true&perfstandbyok=true"
+echo
+kubectl exec -n vault -ti vault-0 -- sh -c "VAULT_TOKEN=$VAULT_TOKEN vault operator raft list-peers"
 echo
 echo "VAULT_ADDR: $VAULT_ADDR"
 echo "VAULT_TOKEN: $VAULT_TOKEN"

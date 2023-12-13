@@ -33,6 +33,7 @@ destroy: init vault-uninstall
 
 vault-init:
 	@./scripts/10_vault_init.sh
+	@./scripts/20_vault_status.sh
 
 vault-reinstall: vault-uninstall k8s
 
@@ -44,8 +45,15 @@ vault-uninstall:
 	@terraform destroy -auto-approve -var create_k8s=false -target module.k8s.helm_release.vault[0]
 	@terraform destroy -auto-approve -var create_k8s=false -target module.k8s
 
+vault-logs:
+	@kubectl wait --for=jsonpath='{.status.phase}'=Running pod --all --namespace vault --timeout=5m
+	@kubectl logs -n vault -l app.kubernetes.io/name=vault -f
+
 vault-curl:
 	@while true;do curl -svI $(shell terraform output -raw vault_url); sleep 5; done
+
+vault-status:
+	@./scripts/20_vault_status.sh
 
 clean:
 	-@rm -f terraform.tfstate*

@@ -34,9 +34,19 @@ variable "vault_chart_version" {
   default = "0.27.0"
 }
 
+variable "vault_repository" {
+  type    = string
+  default = "hashicorp/vault"
+}
+
 variable "vault_version_tag" {
   type    = string
   default = "1.15.4"
+}
+
+variable "vault_license" {
+  type    = string
+  default = null
 }
 
 variable "gke_cluster_name" {

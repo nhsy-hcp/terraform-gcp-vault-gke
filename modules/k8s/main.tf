@@ -65,6 +65,18 @@ resource "kubernetes_secret_v1" "tls_ca" {
   }
 }
 
+resource "kubernetes_secret_v1" "license" {
+  count = var.create && var.vault_license != null ? 1 : 0
+
+  metadata {
+    name      = var.vault_license_secret_name
+    namespace = kubernetes_namespace_v1.default[0].metadata.0.name
+  }
+  data = {
+    (var.vault_license_secret_key) = var.vault_license
+  }
+}
+
 resource "google_compute_global_address" "default" {
   count = var.create ? 1 : 0
   name  = local.lb_name
@@ -72,7 +84,7 @@ resource "google_compute_global_address" "default" {
 
 resource "kubernetes_manifest" "vault_backend_config" {
   count = var.create ? 1 : 0
-  manifest = yamldecode(templatefile("${path.module}/templates/vault_backend_config.yaml",
+  manifest = yamldecode(templatefile("${path.module}/templates/vault_backend_config.tftpl",
     {
       cloud_armor_security_policy_name = local.cloud_armour_security_policy_name
       name                             = var.vault_backend_config
@@ -82,7 +94,7 @@ resource "kubernetes_manifest" "vault_backend_config" {
 
 resource "kubernetes_manifest" "vault_managed_cert" {
   count = var.create ? 1 : 0
-  manifest = yamldecode(templatefile("${path.module}/templates/vault_cert.yaml",
+  manifest = yamldecode(templatefile("${path.module}/templates/vault_cert.tftpl",
     {
       name      = var.managed_cert_name
       namespace = kubernetes_namespace_v1.default[0].metadata.0.name
@@ -100,13 +112,16 @@ resource "helm_release" "vault" {
 
   namespace = kubernetes_namespace_v1.default[0].metadata.0.name
   values = [
-    "${templatefile("${path.module}/templates/vault_values.yaml",
+    "${templatefile("${path.module}/templates/vault_values.tftpl",
       {
-        lb_ip_address_name   = google_compute_global_address.default[0].name
-        managed_cert_name    = var.managed_cert_name
-        vault_backend_config = var.vault_backend_config
-        vault_version_tag    = var.vault_version_tag
-        fqdn                 = var.fqdn
+        lb_ip_address_name        = google_compute_global_address.default[0].name
+        managed_cert_name         = var.managed_cert_name
+        vault_backend_config      = var.vault_backend_config
+        vault_license_secret_name = var.vault_license != null ? var.vault_license_secret_name : ""
+        vault_license_secret_key  = var.vault_license_secret_key
+        vault_repository          = var.vault_repository
+        vault_version_tag         = var.vault_version_tag
+        fqdn                      = var.fqdn
     })}"
   ]
 
