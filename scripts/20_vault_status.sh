@@ -11,9 +11,6 @@ kubectl exec -n vault -ti vault-1 -- vault status
 kubectl exec -n vault -ti vault-2 -- vault status
 echo
 kubectl exec -n vault -ti vault-0 -- sh -c "wget -qO- --no-check-certificate https://127.0.0.1:8200/v1/sys/health?perfstandbyok=true\&perfstandbyok=true"
-kubectl exec -n vault -ti vault-1 -- sh -c "wget -qO- --no-check-certificate https://127.0.0.1:8200/v1/sys/health?perfstandbyok=true\&perfstandbyok=true"
-kubectl exec -n vault -ti vault-2 -- sh -c "wget -qO- --no-check-certificate https://127.0.0.1:8200/v1/sys/health?perfstandbyok=true\&perfstandbyok=true"
-sleep 3
 echo
 curl -skv "$VAULT_ADDR/v1/sys/health?standbyok=true&perfstandbyok=true"
 echo

@@ -63,3 +63,7 @@ variable "vault_client_cidrs" {
   type    = list(string)
   default = []
 }
+
+variable "dns_managed_zone_name" {
+  type = string
+}

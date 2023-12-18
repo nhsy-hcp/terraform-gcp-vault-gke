@@ -1,18 +1,18 @@
 .PHONY: all init tf k8s plan output destroy fmt clean benchmark
 
-all: tf k8s
+init: fmt
+	@terraform init
+
+all: gke vault-install
 
 fmt:
 	@terraform fmt -recursive
 
-init: fmt
-	@terraform init
-
-tf: init
+gke: init
 	@terraform validate
 	@terraform apply -auto-approve -var create_k8s=false
 
-k8s: init
+vault-install: init
 	@terraform apply -auto-approve
 	@./scripts/00_gke.sh
 
@@ -22,7 +22,7 @@ benchmark: init
 
 plan: init
 	@terraform validate
-	@terraform plan
+	@terraform plan -var create_k8s=false
 
 output:
 	@terraform output
@@ -35,7 +35,7 @@ vault-init:
 	@./scripts/10_vault_init.sh
 	@./scripts/20_vault_status.sh
 
-vault-reinstall: vault-uninstall k8s
+vault-reinstall: vault-uninstall vault-install
 
 vault-purge:
 	-@helm uninstall vault -n vault
@@ -44,6 +44,9 @@ vault-purge:
 vault-uninstall:
 	@terraform destroy -auto-approve -var create_k8s=false -target module.k8s.helm_release.vault[0]
 	@terraform destroy -auto-approve -var create_k8s=false -target module.k8s
+
+vault-events:
+	@kubectl get events -n vault -w
 
 vault-logs:
 	@kubectl wait --for=jsonpath='{.status.phase}'=Running pod --all --namespace vault --timeout=5m
@@ -54,6 +57,10 @@ vault-curl:
 
 vault-status:
 	@./scripts/20_vault_status.sh
+
+helm-setup:
+	@helm repo add hashicorp https://helm.releases.hashicorp.com
+	@helm search repo hashicorp/vault
 
 clean:
 	-@rm -f terraform.tfstate*
