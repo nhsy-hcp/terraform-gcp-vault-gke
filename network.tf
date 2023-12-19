@@ -1,11 +1,7 @@
-locals {
-  gke_subnet_name = "snet-gke"
-}
-
 module "network" {
   source = "./modules/network"
 
-  network_name    = format("%s-%s", "vpc", module.common.unique_id)
+  network_name    = local.network_name
   project         = var.project
   region          = var.region
   router_name     = format("%s-%s", "cr-nat-router", module.common.unique_id)

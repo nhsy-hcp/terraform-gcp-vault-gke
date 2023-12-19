@@ -10,6 +10,6 @@ for i in {0..2}; do
   kubectl exec -n vault -ti vault-$i -- vault operator unseal $(cat vault-init.json | jq -r '.unseal_keys_b64[0]')
   kubectl exec -n vault -ti vault-$i -- vault operator unseal $(cat vault-init.json | jq -r '.unseal_keys_b64[1]')
   kubectl exec -n vault -ti vault-$i -- vault operator unseal $(cat vault-init.json | jq -r '.unseal_keys_b64[2]')
-  kubectl exec -n vault -ti vault-$i -- vault status
+#  kubectl exec -n vault -ti vault-$i -- vault status
   sleep 30
 done

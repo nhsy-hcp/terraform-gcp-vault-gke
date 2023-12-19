@@ -1,4 +1,4 @@
-resource "google_container_cluster" "gke_autopilot" {
+resource "google_container_cluster" "autopilot" {
   name     = local.gke_cluster_name
   location = var.region
 

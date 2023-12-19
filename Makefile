@@ -1,41 +1,38 @@
-.PHONY: all init tf k8s plan output destroy fmt clean benchmark
+.PHONY: all init gke vault plan output destroy fmt clean
 
 init: fmt
 	@terraform init
 
-all: gke vault-install
+all: gke vault
 
 fmt:
 	@terraform fmt -recursive
 
 gke: init
 	@terraform validate
+	@terraform apply -auto-approve -var create_k8s=false -target module.common
 	@terraform apply -auto-approve -var create_k8s=false
 
-vault-install: init
+vault: init
 	@terraform apply -auto-approve
 	@./scripts/00_gke.sh
 
-benchmark: init
-	@terraform validate
-	@terraform apply -auto-approve
-
 plan: init
 	@terraform validate
-	@terraform plan -var create_k8s=false
+	@terraform plan
 
 output:
 	@terraform output
 
 destroy: init vault-uninstall
-	@terraform destroy -auto-approve -var create_k8s=false -target google_container_cluster.gke_autopilot
+	@terraform destroy -auto-approve -var create_k8s=false -target google_container_cluster.autopilot
 	@terraform destroy -auto-approve -var create_k8s=false
 
 vault-init:
 	@./scripts/10_vault_init.sh
 	@./scripts/20_vault_status.sh
 
-vault-reinstall: vault-uninstall vault-install
+vault-reinstall: vault-uninstall vault
 
 vault-purge:
 	-@helm uninstall vault -n vault

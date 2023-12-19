@@ -11,6 +11,6 @@ module "k8s" {
   vault_version_tag            = var.vault_version_tag
 
   depends_on = [
-    google_container_cluster.gke_autopilot
+    google_container_cluster.autopilot
   ]
 }

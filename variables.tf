@@ -51,7 +51,7 @@ variable "vault_license" {
 
 variable "gke_cluster_name" {
   type    = string
-  default = "gke-autopilot"
+  default = "vault-autopilot"
 }
 
 variable "create_k8s" {

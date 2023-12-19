@@ -16,7 +16,8 @@ The following resources are created:
 
 ## Setup
 The following tools are required to run this example:
-- Git
+- curl
+- git
 - Google Cloud SDK + gke-gcloud-auth-plugin
 - helm
 - jq
@@ -30,6 +31,7 @@ https://shell.cloud.google.com/?show=terminal
 Open the Google Cloudshell terminal and set the project if not already set:
 ```bash
 gcloud config set project _project_id_
+gcloud auth list
 ```
 
 Clone the repo and change to the folder:
@@ -59,22 +61,10 @@ make vault-install
 ```
 The output of the above command should be similar to the below:
 ```bash
-Apply complete! Resources: 6 added, 0 changed, 0 destroyed.
-
 Outputs:
 
-gke_cluster_name = "gke-autopilot-knupw"
-project = "gke-autopilot-knupw"
-region = "europe-west1"
-vault_fqdn = "vault.example.com"
-vault_url = "https://vault.example.com"
-
-Apply complete! Resources: 11 added, 0 changed, 0 destroyed.
-
-Outputs:
-
-gke_cluster_name = "gke-autopilot-knupw"
-project = "gke-autopilot-knupw"
+gke_cluster_name = "vault-autopilot-knupw"
+project = "vault-autopilot"
 region = "europe-west1"
 vault_fqdn = "vault.example.com"
 vault_ip_address = "x.x.x.x"
