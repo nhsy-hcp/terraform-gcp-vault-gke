@@ -1,17 +1,20 @@
 # terraform-gcp-vault-gke
 This repository contains an example terraform deployment for a HashiCorp Vault cluster on GKE Autopilot.
 
+![overview](docs/overview.png)
+
 ## Pre-requisites
 - A sandbox Google Cloud project with owner IAM permissions
-- CloudDNS manage zone with delegation to the sandbox project
+- A Google Cloud DNS managed zone with delegation to the sandbox project
 
 ## Architecture
 The following resources are created:
-- Google Network
-- Google GKE Autopilot cluster
-- Google Cloud Armor security policy 
-- Google Cloud DNS record
-- Google Cloud Load Balancer
+- GKE Autopilot cluster
+- Cloud Armor security policy 
+- Cloud DNS record
+- Cloud Load Balancer
+- Cloud NAT
+- Cloud Network
 - Vault helm chart
 
 ## Setup
