@@ -40,11 +40,12 @@ Clone the repo and change to the folder:
 git clone https://github.com/nhsy-hcp/terraform-gcp-vault-gke.git
 cd terraform-gcp-vault-gke
 ```
-Create a file named `terraform.tfvars` with the following variables:
+Create a file named `terraform.tfvars` with the following variables and set values accordingly:
 ```hcl
-project = "_project-id_"
+project = "my-vault-project"
 region  = "europe-west1"
-dns_managed_zone_name = "_zone-name_"
+dns_managed_zone_name = "my-dns-zone"
+vault_fqdn = "vault.example.com"
 ```
 
 ## Deployment

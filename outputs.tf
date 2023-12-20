@@ -10,7 +10,7 @@ output "gke_cluster_name" {
 }
 
 output "vault_fqdn" {
-  value = local.vault_fqdn
+  value = var.vault_fqdn
 }
 
 output "vault_url" {

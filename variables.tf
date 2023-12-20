@@ -14,20 +14,9 @@ variable "subnet_cidr" {
   default = "10.64.0.0/16"
 }
 
-variable "google_apis" {
-  type = set(string)
-  default = [
-    "cloudkms.googleapis.com",
-    "compute.googleapis.com",
-    "iap.googleapis.com",
-  ]
+variable "vault_fqdn" {
+  type = string
 }
-
-variable "domain_name_suffix" {
-  type    = string
-  default = "gcp.sbx.hashicorpdemo.com"
-}
-
 
 variable "vault_chart_version" {
   type    = string

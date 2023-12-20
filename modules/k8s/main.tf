@@ -98,7 +98,7 @@ resource "kubernetes_manifest" "vault_managed_cert" {
     {
       name      = var.managed_cert_name
       namespace = kubernetes_namespace_v1.default[0].metadata.0.name
-      fqdn      = var.fqdn
+      fqdn      = var.vault_fqdn
   }))
 }
 
@@ -121,7 +121,7 @@ resource "helm_release" "vault" {
         vault_license_secret_key  = var.vault_license_secret_key
         vault_repository          = var.vault_repository
         vault_version_tag         = var.vault_version_tag
-        fqdn                      = var.fqdn
+        fqdn                      = var.vault_fqdn
     })}"
   ]
 

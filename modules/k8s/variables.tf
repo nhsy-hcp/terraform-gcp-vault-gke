@@ -59,8 +59,12 @@ variable "vault_backend_config" {
   default = "vault-backend-config"
 }
 
-variable "fqdn" {
+variable "vault_fqdn" {
   type = string
+  validation {
+    condition     = length(var.vault_fqdn) <= 63
+    error_message = "Vault FQDN max length 63 characters."
+  }
 }
 
 variable "managed_cert_name" {

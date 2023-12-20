@@ -10,7 +10,6 @@ fmt:
 
 gke: init
 	@terraform validate
-	@terraform apply -auto-approve -var create_k8s=false -target module.common
 	@terraform apply -auto-approve -var create_k8s=false
 
 vault: init

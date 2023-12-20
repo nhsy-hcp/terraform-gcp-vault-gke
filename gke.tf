@@ -18,7 +18,7 @@ resource "google_container_cluster" "autopilot" {
   }
 
   network    = module.network.network_name
-  subnetwork = module.network.subnets_names["${var.region}/${local.gke_subnet_name}"]
+  subnetwork = module.network.subnet_name
 
   depends_on = [module.network]
 

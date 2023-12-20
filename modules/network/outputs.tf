@@ -18,31 +18,27 @@ output "network_self_link" {
   value       = google_compute_network.vpc.self_link
 }
 
-output "subnets" {
-  description = "A map with keys of form subnet_region/subnet_name and values being the outputs of the google_compute_subnetwork resources used to create corresponding subnets"
+output "subnet" {
+  description = "The subnet resource"
   value       = google_compute_subnetwork.subnetwork
 }
 
-output "subnets_names" {
-  description = "The names of the subnets being created"
-  #  value       = [for subnet in google_compute_subnetwork.subnetwork : subnet.name]
-  value = { for k, v in google_compute_subnetwork.subnetwork : k => v.name }
+output "subnet_name" {
+  description = "The name of the subnet"
+  value       = google_compute_subnetwork.subnetwork.name
 }
 
 output "subnets_ip_cidr_ranges" {
-  description = "The IPs and CIDRs of the subnets being created"
-  #  value       = [for subnet in google_compute_subnetwork.subnetwork : subnet.ip_cidr_range]
-  value = { for k, v in google_compute_subnetwork.subnetwork : k => v.ip_cidr_range }
+  description = "The IP CIDR of the subnet"
+  value       = google_compute_subnetwork.subnetwork.ip_cidr_range
 }
 
-output "subnets_self_links" {
-  description = "The self-links of subnets being created"
-  #  value       = [for subnet in google_compute_subnetwork.subnetwork : subnet.self_link]
-  value = { for k, v in google_compute_subnetwork.subnetwork : k => v.self_link }
+output "subnet_self_links" {
+  description = "The self_link of the subnet"
+  value       = google_compute_subnetwork.subnetwork.self_link
 }
 
-output "subnets_regions" {
-  description = "The region where the subnets will be created"
-  #  value       = [for subnet in google_compute_subnetwork.subnetwork : subnet.region]
-  value = { for k, v in google_compute_subnetwork.subnetwork : k => v.region }
+output "subnet_region" {
+  description = "The region of the subnet"
+  value       = google_compute_subnetwork.subnetwork.region
 }

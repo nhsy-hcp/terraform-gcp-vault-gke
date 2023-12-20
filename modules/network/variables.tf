@@ -37,8 +37,8 @@ variable "description" {
   default     = null
 }
 
-variable "subnets" {
-  type = map(object({
+variable "subnet" {
+  type = object({
     subnet_name                      = string
     subnet_ip                        = string
     subnet_region                    = string
@@ -52,18 +52,9 @@ variable "subnets" {
     description                      = optional(string)
     purpose                          = optional(string)
     role                             = optional(string)
-  }))
-  description = "The list of subnets being created"
+  })
+  description = "The subnets being created"
 }
-
-#variable "secondary_ranges" {
-#  description = "Secondary ranges that will be used in some of the subnets"
-#  type = map(list(object({
-#    range_name    = string
-#    ip_cidr_range = string
-#  })))
-#  default = {}
-#}
 
 variable "router_name" {
   description = "Router name"
