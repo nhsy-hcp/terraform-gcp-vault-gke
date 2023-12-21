@@ -87,7 +87,7 @@ resource "helm_release" "vault_prereqs" {
   count = var.create ? 1 : 0
 
   name      = "vault-prereqs"
-  chart     = "${path.module}/charts/vault_prereqs"
+  chart     = "${path.root}/charts/vault_prereqs"
   namespace = kubernetes_namespace_v1.default[0].metadata.0.name
 
   set {
