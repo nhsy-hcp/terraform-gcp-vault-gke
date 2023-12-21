@@ -76,7 +76,7 @@ server:
       kubernetes.io/ingress.allow-http: "false"
       kubernetes.io/ingress.class: "gce"
       kubernetes.io/ingress.global-static-ip-name: "${lb_ip_address_name}"
-      networking.gke.io/managed-certificates: "${managed_cert_name}"
+      networking.gke.io/managed-certificates: "${managed_certificate_name}"
 
   extraVolumes:
     - type: secret

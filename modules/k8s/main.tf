@@ -65,6 +65,7 @@ resource "kubernetes_secret_v1" "tls_ca" {
   }
 }
 
+# Create vault enterprise license secret if set
 resource "kubernetes_secret_v1" "license" {
   count = var.create && var.vault_license != null ? 1 : 0
 
@@ -82,29 +83,37 @@ resource "google_compute_global_address" "default" {
   name  = local.lb_name
 }
 
-resource "kubernetes_manifest" "vault_backend_config" {
+resource "helm_release" "vault_prereqs" {
   count = var.create ? 1 : 0
-  manifest = yamldecode(templatefile("${path.module}/templates/vault_backend_config.tftpl",
-    {
-      cloud_armor_security_policy_name = local.cloud_armour_security_policy_name
-      name                             = var.vault_backend_config
-      namespace                        = kubernetes_namespace_v1.default[0].metadata.0.name
-  }))
-}
 
-resource "kubernetes_manifest" "vault_managed_cert" {
-  count = var.create ? 1 : 0
-  manifest = yamldecode(templatefile("${path.module}/templates/vault_cert.tftpl",
-    {
-      name      = var.managed_cert_name
-      namespace = kubernetes_namespace_v1.default[0].metadata.0.name
-      fqdn      = var.vault_fqdn
-  }))
+  name      = "vault-prereqs"
+  chart     = "${path.module}/charts/vault_prereqs"
+  namespace = kubernetes_namespace_v1.default[0].metadata.0.name
+
+  set {
+    name  = "backend_config_name"
+    value = var.vault_backend_config
+  }
+  set {
+    name  = "cloud_armor_security_policy_name"
+    value = local.cloud_armour_security_policy_name
+  }
+  set {
+    name  = "fqdn"
+    value = var.vault_fqdn
+  }
+  set {
+    name  = "managed_certificate_name"
+    value = var.managed_certificate_name
+  }
+  set {
+    name  = "namespace"
+    value = kubernetes_namespace_v1.default[0].metadata.0.name
+  }
 }
 
 resource "helm_release" "vault" {
-  count = var.create ? 1 : 0
-
+  count      = var.create ? 1 : 0
   name       = "vault"
   repository = "helm.releases.hashicorp.com"
   chart      = "hashicorp/vault"
@@ -115,7 +124,7 @@ resource "helm_release" "vault" {
     "${templatefile("${path.module}/templates/vault_values.tftpl",
       {
         lb_ip_address_name        = google_compute_global_address.default[0].name
-        managed_cert_name         = var.managed_cert_name
+        managed_certificate_name  = var.managed_certificate_name
         vault_backend_config      = var.vault_backend_config
         vault_license_secret_name = var.vault_license != null ? var.vault_license_secret_name : ""
         vault_license_secret_key  = var.vault_license_secret_key
@@ -125,11 +134,8 @@ resource "helm_release" "vault" {
     })}"
   ]
 
-  wait = true
-
   depends_on = [
-    kubernetes_manifest.vault_backend_config,
-    kubernetes_manifest.vault_managed_cert
+    helm_release.vault_prereqs
   ]
 }
 

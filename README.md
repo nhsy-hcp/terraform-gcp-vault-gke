@@ -110,20 +110,36 @@ VAULT_ADDR: https://vault.example.com
 VAULT_TOKEN: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx
 ```
 
-## Troubleshooting
-In another terminal, watch the Hashicorp Vault namespace events:
+## Monitor 
+Once HashiCorp Vault has been deployed and initialized it can take upto 20 minutes for the Google Managed Certificate to be validated and propagated.
+
+In another terminal, watch the HashiCorp Vault namespace events:
 ```bash
 make vault-events
 ```
-In another terminal, watch the Hashicorp Vault pod logs:
+In another terminal, watch the HashiCorp Vault pod logs:
 ```bash
 make vault-logs
 ```
-In another terminal, curl the Hashicorp Vault endpoint:
+In another terminal, curl the HashiCorp Vault URL:
 ```bash
 make vault-curl
 ```
+Upon successful deployment the output of the `make vault-curl` command will be similar to the following:
+```bash
+< HTTP/2 200 
+< cache-control: no-store
+< content-type: application/json
+< strict-transport-security: max-age=31536000; includeSubDomains
+< date: Thu, 21 Dec 2023 15:53:54 GMT
+< content-length: 295
+< via: 1.1 google
+< alt-svc: h3=":443"; ma=2592000,h3-29=":443"; ma=2592000
+< 
+{"initialized":true,"sealed":false,"standby":false,"performance_standby":false,"replication_performance_mode":"disabled","replication_dr_mode":"disabled","server_time_utc":1703174034,"version":"1.15.4","cluster_name":"vault-cluster-60faa0bd","cluster_id":"1192efbe-f8d0-0c09-8663-26d2d363c896"}
+* Connection #0 to host vault.example.com left intact
 
+```
 ## Cleanup
 Destroy the Hashicorp Vault and GKE autopilot cluster deployment:
 ```bash
@@ -136,27 +152,4 @@ You can deploy Vault Enterprise Edition by settings the following values in `ter
 vault_license     = "_LICENSE-STRING_"
 vault_repository  = "hashicorp/vault-enterprise"
 vault_version_tag = "1.15.4-ent"
-```
-## Known Issues
-The [vault deployment](modules/k8s/main.tf) uses the `kubernetes` terraform provider and `kubernetes_manifest` resource which requires the GKE cluster to be available during `terraform plan` & `terraform apply`.
-
-These issues will be resolved in the future by using the terraform stacks features, in the interim a [Makefile](Makefile) provides a workaround by adopting a two stage deployment process.
-```hcl
-│ Error: Failed to construct REST client
-│ 
-│   with module.k8s.kubernetes_manifest.vault_backend_config[0],
-│   on modules/k8s/main.tf line 85, in resource "kubernetes_manifest" "vault_backend_config":
-│   85: resource "kubernetes_manifest" "vault_backend_config" {
-│ 
-│ cannot create REST client: no client config
-
-╷
-│ Error: Failed to construct REST client
-│ 
-│   with module.k8s.kubernetes_manifest.vault_managed_cert[0],
-│   on modules/k8s/main.tf line 95, in resource "kubernetes_manifest" "vault_managed_cert":
-│   95: resource "kubernetes_manifest" "vault_managed_cert" {
-│ 
-│ cannot create REST client: no client config
-╵
 ```

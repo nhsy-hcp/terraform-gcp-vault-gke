@@ -1,9 +1,7 @@
-.PHONY: all init gke vault plan output destroy fmt clean
+.PHONY: init gke vault plan output destroy fmt clean
 
 init: fmt
 	@terraform init
-
-all: gke vault
 
 fmt:
 	@terraform fmt -recursive
@@ -49,7 +47,7 @@ vault-logs:
 	@kubectl logs -n vault -l app.kubernetes.io/name=vault -f
 
 vault-curl:
-	@while true;do curl -svI $(shell terraform output -raw vault_url); sleep 5; done
+	@while true;do curl -sv $(shell terraform output -raw vault_url)/v1/sys/health; sleep 5; done
 
 vault-status:
 	@./scripts/20_vault_status.sh

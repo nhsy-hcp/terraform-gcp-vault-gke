@@ -67,7 +67,7 @@ variable "vault_fqdn" {
   }
 }
 
-variable "managed_cert_name" {
+variable "managed_certificate_name" {
   type    = string
   default = "vault-managed-cert"
 

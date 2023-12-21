@@ -1,8 +1,8 @@
 apiVersion: cloud.google.com/v1
 kind: BackendConfig
 metadata:
-  name: ${name}
-  namespace: ${namespace}
+  name: {{ .Values.backend_config_name }}
+  namespace: {{ .Values.namespace }}
 spec:
   healthCheck:
     timeoutSec: 5
@@ -13,4 +13,4 @@ spec:
     requestPath: /v1/sys/health
     port: 8200
   securityPolicy:
-    name: ${cloud_armor_security_policy_name}
+    name: {{ .Values.cloud_armor_security_policy_name }}
